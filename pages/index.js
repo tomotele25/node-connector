@@ -1,6 +1,23 @@
-import Image from "next/image";
+"use client";
+import Features from "@/components/Features";
+import Hero from "@/components/Hero";
+import Navbar from "@/components/Navbar";
 import { Geist, Geist_Mono } from "next/font/google";
-
+import { useEffect, useRef } from "react";
+import {
+  CheckCircle,
+  Undo2,
+  Layers,
+  Shuffle,
+  Gift,
+  ShieldCheck,
+  Fuel,
+  ListChecks,
+  Wrench,
+  ArrowLeftRight,
+} from "lucide-react";
+import About from "@/components/About";
+import Form from "@/components/Form";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -12,104 +29,135 @@ const geistMono = Geist_Mono({
 });
 
 export default function Home() {
+  const canvasRef = useRef(null);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d");
+    let w = (canvas.width = window.innerWidth);
+    let h = (canvas.height = window.innerHeight);
+
+    const stars = [];
+    const numStars = 600; // 🔥 Increased stars so screen is fully filled
+
+    for (let i = 0; i < numStars; i++) {
+      stars.push({
+        x: Math.random() * w - w / 2,
+        y: Math.random() * h - h / 2,
+        z: Math.random() * w,
+      });
+    }
+
+    function animate() {
+      ctx.fillStyle = "#0a0914";
+      ctx.fillRect(0, 0, w, h);
+
+      for (let i = 0; i < numStars; i++) {
+        let star = stars[i];
+        star.z -= 2;
+        if (star.z <= 0) {
+          star.x = Math.random() * w - w / 2;
+          star.y = Math.random() * h - h / 2;
+          star.z = w;
+        }
+
+        const k = 128.0 / star.z;
+        const px = star.x * k + w / 2;
+        const py = star.y * k + h / 2;
+
+        if (px >= 0 && px <= w && py >= 0 && py <= h) {
+          const size = (1 - star.z / w) * 2.5;
+
+          ctx.beginPath();
+          ctx.arc(px, py, size, 0, 2 * Math.PI);
+
+          // ✨ Twinkling effect (brightness changes)
+          const brightness = Math.random() * 255;
+          ctx.fillStyle = `rgb(${brightness}, ${brightness}, ${brightness})`;
+          ctx.fill();
+        }
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    animate();
+
+    const handleResize = () => {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+    };
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <div
-      className={`${geistSans.className} ${geistMono.className} font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20`}
+      className={`relative min-h-screen w-full ${geistSans.className} ${geistMono.className} font-[family-name:var(--font-geist-sans)]`}
     >
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+      <canvas
+        ref={canvasRef}
+        className="fixed top-0 left-0 w-full h-full -z-10"
+      />
+      <Navbar />
+      <Hero />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mt-12 sm:px-28 px-5">
+        <Features
+          icon={<CheckCircle size={50} />}
+          headline="VALIDATIONS & APPROVALS"
+          description="Access portfolio and transactions across multiple hardware wallets, portfolio changes and all connected dapps."
         />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              pages/index.js
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=default-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        <Features
+          icon={<Undo2 size={50} />}
+          headline="RECOVERY"
+          description="See where your assets move to and revoke access to malicious contracts and interactions."
+        />
+        <Features
+          icon={<Layers size={50} />}
+          headline="STAKING AND NFT REVIEW"
+          description="Having complete control of your staking portfolio, staking rewards and NFT portfolio across all chains."
+        />
+        <Features
+          icon={<Shuffle size={50} />}
+          headline="CROSS BRIDGE"
+          description="Utilizing Cosmos SDK for secure cross-chain asset bridging between Layer 1s and Layer 2s. Bridge assets multichain and check status of all bridge assets."
+        />
+        <Features
+          icon={<Gift size={50} />}
+          headline="CLAIM AIRDROP"
+          description="Claim various distributed tokens across various protocols and blockchains with a single click."
+        />
+        <Features
+          icon={<ShieldCheck size={50} />}
+          headline="AUTHENTICATION"
+          description="Authenticate your wallets with blockchains servers to avoid failed transactions and loss of funds."
+        />
+        <Features
+          icon={<Fuel size={50} />}
+          headline="GAS RETRIEVAL"
+          description="Retrieve all unused gas fees on different chains and claim them back to your wallet, allows you view all unused gas fees across different protocols."
+        />
+        <Features
+          icon={<ListChecks size={50} />}
+          headline="WHITELISTS"
+          description="View projects that you can get whitelisted on and their criteria to be an early adopter."
+        />
+        <Features
+          icon={<Wrench size={50} />}
+          headline="RECTIFICATION"
+          description="Recovery wallet Dapps with Blockchain and DeFi."
+        />
+        <Features
+          icon={<ArrowLeftRight size={50} />}
+          headline="MIGRATION"
+          description="Migrate tokens in and out of a contract and migrate across different chains."
+        />
+      </div>
+      <About />
+      <Form />
     </div>
   );
 }
