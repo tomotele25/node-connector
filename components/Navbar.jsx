@@ -1,9 +1,10 @@
 import { Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 const Navbar = () => {
+  const [isOpened, setIsOpened] = useState(false);
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-[#0F1212] py-5 px-5 md:px-20 flex justify-between items-center shadow-md">
       {/* Left Section: Logo + Links */}
@@ -15,7 +16,17 @@ const Navbar = () => {
           <Link href="">Lite Paper</Link>
         </ul>
       </span>
-
+      {isOpened ? (
+        <div className="bg-[#0F1212] w-full absolute left-0 top-20">
+          <ul className="flex flex-col">
+            <Link href="">Roadmap</Link>
+            <Link href="">Join Presale</Link>
+            <Link href="">Lite Paper</Link>
+          </ul>
+        </div>
+      ) : (
+        ""
+      )}
       {/* Right Section: Connect button */}
       <span className="hidden md:flex">
         <Link
@@ -27,7 +38,10 @@ const Navbar = () => {
       </span>
 
       {/* Mobile Hamburger */}
-      <span className="md:hidden text-white">
+      <span
+        onClick={() => setIsOpened(!isOpened)}
+        className="md:hidden text-white"
+      >
         <Menu size={28} />
       </span>
     </nav>
